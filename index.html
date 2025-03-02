@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run ISO with QEMU</title>
+</head>
+<body>
+    <h1>Upload and Run ISO with QEMU</h1>
+
+    <form id="isoForm" enctype="multipart/form-data">
+        <input type="file" name="isoFile" id="isoFile" accept=".iso" required>
+        <button type="submit">Upload and Run ISO</button>
+    </form>
+
+    <div id="message"></div>
+
+    <script>
+        document.getElementById("isoForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            const fileInput = document.getElementById("isoFile");
+            formData.append("isoFile", fileInput.files[0]);
+
+            fetch("/upload", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("message").innerHTML = "ISO file is being processed with QEMU!";
+                } else {
+                    document.getElementById("message").innerHTML = "Error: " + data.error;
+                }
+            })
+            .catch(error => {
+                document.getElementById("message").innerHTML = "An error occurred: " + error.message;
+            });
+        });
+    </script>
+</body>
+</html>
